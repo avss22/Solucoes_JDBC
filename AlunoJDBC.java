@@ -1,19 +1,46 @@
+package jdbc;
+
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
+import entities.Aluno;
+
 public class AlunoJDBC {
-
-    private Connection connection;
-
-    public AlunoJDBC(Connection connection) {
-        this.connection = connection;
-    }
-
-    public List<Aluno> listar() {
+	
+	String sql;
+	PreparedStatement pst;
+	
+	
+	public void salvar(Aluno a, Connection con) throws IOException {
+		
+		try {
+			
+			sql = "INSERT INTO aluno (nome, sexo, dt_nasc) VALUES (?,  ?, ?)";
+			
+			pst = con.prepareStatement(sql);
+			pst.setString(1, a.getNome());
+			pst.setString(2, a.getSexo());
+			
+			Date dataSql = new Date(a.getDt_nasc().getTime());
+			pst.setDate(3, dataSql);
+			
+			pst.executeUpdate();
+			System.out.println("\nCadastro do aluno realizado com sucesso!");
+			
+		}
+		catch (SQLException e) {
+			
+			System.out.println(e);
+		}
+		
+	}
+	
+	public List<Aluno> listar() {
+        
         List<Aluno> alunos = new ArrayList<>();
         String sql = "SELECT * FROM Aluno";
         
@@ -31,11 +58,10 @@ public class AlunoJDBC {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
-        return alunos;
-    }
-
-    public void apagar(int id) {
+        return null;
+	}
+	
+	public void apagar(int id) {
         String sql = "DELETE FROM Aluno WHERE id = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -43,10 +69,9 @@ public class AlunoJDBC {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void alterar(Aluno a) {
+	}
+	
+	public void alterar(Aluno a) {
         String sql = "UPDATE Aluno SET nome = ?, sexo = ?, dt_nasc = ? WHERE id = ?";
         
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -57,6 +82,5 @@ public class AlunoJDBC {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
+	}
 }
